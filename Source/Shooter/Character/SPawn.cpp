@@ -9,6 +9,7 @@
 #include "Shooter.h"
 #include "SPawnMovementComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -76,14 +77,28 @@ void ASPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 float ASPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (IsAlive())
+	if (!IsAlive())
 	{
-		OnHit();
-		ChangeHealth(-DamageAmount);
-		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+		return 0;
 	}
 
-	return 0.f;
+	OnHit();
+	ChangeHealth(-DamageAmount);
+
+	if (Health < 0.1f)
+	{
+		OnDie();
+
+		if (EventInstigator != nullptr)
+		{
+			if (const auto State = EventInstigator->GetPlayerState<APlayerState>())
+			{
+				State->SetScore(State->GetScore() + 1);
+			}
+		}
+	}
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ASPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -193,9 +208,4 @@ void ASPawn::ChangeHealth_Implementation(const float Value)
 	const float OldHealth = Health;
 	Health = NewHealth;
 	OnHealthChanged.Broadcast(Health, OldHealth);
-
-	if (IsAlive() && Health < 0.1f)
-	{
-		OnDie();
-	}
 }
