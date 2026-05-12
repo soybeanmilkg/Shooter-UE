@@ -11,9 +11,10 @@ public class Shooter : ModuleRules
 		PublicIncludePaths.AddRange(["Shooter"]);
 
 		PublicDependencyModuleNames.AddRange([
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Slate", "SlateCore",
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+			"Slate", "SlateCore", "UMG",
 			"OnlineSubsystem",
-			
+
 			"Paper2D",
 		]);
 	}

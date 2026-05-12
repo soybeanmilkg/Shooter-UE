@@ -65,7 +65,7 @@ TArray<FSPlayerScoreInfo> ASGameStateBase::GetScoreInfos() const
 	while (Heap.Num() > 0)
 	{
 		FSPlayerScoreInfo Info {};
-		Heap.HeapPop(Info, Comparer, true);
+		Heap.HeapPop(Info, Comparer);
 		Output[Heap.Num()] = Info;
 	}
 
@@ -89,7 +89,7 @@ void ASGameStateBase::RecordScoreInfo(ASPlayerController* PlayerController)
 		FSPlayerScoreInfo TempInfo {};
 		while (ScoreInfos.Num() > 10)
 		{
-			ScoreInfos.HeapPop(TempInfo, Comparer, true);
+			ScoreInfos.HeapPop(TempInfo, Comparer);
 		}
 
 		SaveData();
