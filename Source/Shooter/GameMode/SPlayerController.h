@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "CommonPlayerController.h"
 #include "SPlayerController.generated.h"
 
 class UInputMappingContext;
@@ -22,7 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSOnPossessPlayerPawnDelegate);
  * 
  */
 UCLASS()
-class SHOOTER_API ASPlayerController : public APlayerController
+class SHOOTER_API ASPlayerController : public ACommonPlayerController
 {
 	GENERATED_BODY()
 
@@ -44,25 +44,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSOnPossessPlayerPawnDelegate OnPossessPlayerPawn {};
 
-	UFUNCTION(BlueprintCallable, Category="Shooter|Input")
-	void SetSInputMode(const ESInputMode NewInputMode);
-
-	UFUNCTION(BlueprintPure, Category="Shooter|UI")
-	UUserWidget* GetCurrentWidget() const { return CurrentWidget; }
-
-	UFUNCTION(BlueprintCallable, Category="Shooter|UI")
-	void Goto(const TSubclassOf<UUserWidget> ToWidgetClass);
-
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter")
-	ESInputMode InputMode { ESInputMode::GameAndUI };
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter")
 	TObjectPtr<UInputMappingContext> InputMappingContext { nullptr };
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter")
-	TSubclassOf<UUserWidget> SetupWidget { nullptr };
-
-	UPROPERTY(Transient)
-	UUserWidget* CurrentWidget { nullptr };
 };

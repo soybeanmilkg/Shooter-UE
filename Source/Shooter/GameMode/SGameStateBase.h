@@ -3,19 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ModularGameStateBase.h"
 #include "ShooterSaveData.h"
-#include "GameFramework/GameStateBase.h"
 #include "SGameStateBase.generated.h"
 
+class UGameMainAsset;
+class UGameExperienceManagerComponent;
 class ASPlayerController;
 class USServerSaveData;
 /**
  * 
  */
 UCLASS()
-class SHOOTER_API ASGameStateBase : public AGameStateBase
+class SHOOTER_API ASGameStateBase : public AModularGameStateBase
 {
 	GENERATED_BODY()
+
+public:
+	explicit ASGameStateBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	//~ Begin AActor
@@ -36,7 +41,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Shooter")
 	void RecordScoreInfo(ASPlayerController* PlayerController);
 
+	UGameExperienceManagerComponent* GetExperienceManager() const { return ExperienceManager; }
+
 protected:
+	UPROPERTY(Transient)
+	TObjectPtr<UGameExperienceManagerComponent> ExperienceManager { nullptr };
+
 	// 背景音乐
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Shooter")
 	TObjectPtr<USoundBase> BackgroundMusic { nullptr };
@@ -48,6 +58,7 @@ protected:
 	// 分数信息
 	UPROPERTY(Replicated)
 	TArray<FSPlayerScoreInfo> ScoreInfos {};
+
 
 	void LoadSaveData();
 	void SaveData();

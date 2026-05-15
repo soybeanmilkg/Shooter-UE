@@ -41,7 +41,7 @@ public:
  * 本地玩家存档
  */
 UCLASS()
-class SHOOTER_API USPlayerSaveData : public USaveGame
+class SHOOTER_API USPlayerSaveData : public ULocalPlayerSaveGame
 {
 	GENERATED_BODY()
 

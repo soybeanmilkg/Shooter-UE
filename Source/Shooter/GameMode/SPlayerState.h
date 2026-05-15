@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerState.h"
+#include "ModularPlayerState.h"
 #include "SPlayerState.generated.h"
 
 class ASPlayerController;
@@ -12,7 +12,7 @@ class USPlayerSaveData;
  * 
  */
 UCLASS()
-class SHOOTER_API ASPlayerState : public APlayerState
+class SHOOTER_API ASPlayerState : public AModularPlayerState
 {
 	GENERATED_BODY()
 

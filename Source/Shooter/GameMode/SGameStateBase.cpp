@@ -3,6 +3,7 @@
 
 #include "SGameStateBase.h"
 
+#include "GameExperienceManagerComponent.h"
 #include "Shooter.h"
 #include "SPlayerController.h"
 #include "SPlayerState.h"
@@ -23,13 +24,19 @@ struct FSScoreInfoComparer
 	}
 };
 
+ASGameStateBase::ASGameStateBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	ExperienceManager = CreateDefaultSubobject<UGameExperienceManagerComponent>(TEXT("ExperienceManager"));
+}
+
 void ASGameStateBase::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (!UKismetSystemLibrary::IsDedicatedServer(this) && BackgroundMusic != nullptr)
 	{
-		UGameplayStatics::PlaySound2D(this, BackgroundMusic);
+		// UGameplayStatics::PlaySound2D(this, BackgroundMusic);
 	}
 
 	LoadSaveData();

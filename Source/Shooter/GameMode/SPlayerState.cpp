@@ -6,7 +6,6 @@
 #include "Shooter.h"
 #include "ShooterSaveData.h"
 #include "SPlayerController.h"
-#include "Kismet/GameplayStatics.h"
 
 void ASPlayerState::BeginPlay()
 {
@@ -52,13 +51,9 @@ void ASPlayerState::LoadSaveData()
 {
 	if (OwningPlayer && OwningPlayer->IsLocalController())
 	{
-		PlayerSaveData = Cast<USPlayerSaveData>(UGameplayStatics::LoadGameFromSlot(Shooter::SaveGame::Slot_Player, 0));
-		if (PlayerSaveData == nullptr)
-		{
-			PlayerSaveData = NewObject<USPlayerSaveData>();
-			SaveData();
-		}
-
+		PlayerSaveData = Cast<USPlayerSaveData>(ULocalPlayerSaveGame::LoadOrCreateSaveGameForLocalPlayer(
+			USPlayerSaveData::StaticClass(), OwningPlayer->GetLocalPlayer(), Shooter::SaveGame::Slot_Player));
+		check(PlayerSaveData != nullptr);
 		OwningPlayer->ServerChangeName(PlayerSaveData->PlayerName.ToString());
 	}
 }
@@ -67,7 +62,7 @@ void ASPlayerState::SaveData()
 {
 	if (PlayerSaveData != nullptr)
 	{
-		if (!UGameplayStatics::SaveGameToSlot(PlayerSaveData, Shooter::SaveGame::Slot_Player, 0))
+		if (!PlayerSaveData->SaveGameToSlotForLocalPlayer())
 		{
 			UE_LOG(LogShooter, Warning, TEXT("[ASPlayerState] Failed to save player data"));
 		}

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "ModularPawn.h"
 #include "SPawn.generated.h"
 
 class USPawnMovementComponent;
@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedDelegate, float, He
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeadDelegate);
 
 UCLASS(Abstract)
-class SHOOTER_API ASPawn : public APawn
+class SHOOTER_API ASPawn : public AModularPawn
 {
 	GENERATED_BODY()
 
