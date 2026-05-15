@@ -25,8 +25,5 @@ protected:
 	//~ End GameModeBase
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UGameExperienceDefinition> Experience { nullptr };
-
 	void HandleExperience() const;
 };

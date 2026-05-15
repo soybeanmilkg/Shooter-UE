@@ -6,16 +6,6 @@
 #include "CommonPlayerController.h"
 #include "SPlayerController.generated.h"
 
-class UInputMappingContext;
-
-UENUM(BlueprintType)
-enum class ESInputMode : uint8
-{
-	Game,
-	UI,
-	GameAndUI,
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSOnPossessPlayerPawnDelegate);
 
 /**
@@ -43,8 +33,4 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FSOnPossessPlayerPawnDelegate OnPossessPlayerPawn {};
-
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Shooter")
-	TObjectPtr<UInputMappingContext> InputMappingContext { nullptr };
 };

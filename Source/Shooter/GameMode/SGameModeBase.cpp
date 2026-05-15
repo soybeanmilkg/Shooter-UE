@@ -8,7 +8,7 @@
 #include "Shooter.h"
 #include "SPlayerController.h"
 #include "SPlayerState.h"
-#include "Engine/AssetManager.h"
+#include "SWorldSettings.h"
 
 ASGameModeBase::ASGameModeBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -29,14 +29,15 @@ void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FS
 void ASGameModeBase::HandleExperience() const
 {
 	FPrimaryAssetId ExperienceId;
-	if (!Experience.IsNull())
+
+	if (const auto WorldSettings = Cast<ASWorldSettings>(GetWorldSettings()))
 	{
-		ExperienceId = UAssetManager::Get().GetPrimaryAssetIdForPath(Experience.ToSoftObjectPath());
+		ExperienceId = WorldSettings->GetGameExperienceAssetId();
 	}
 
 	if (!ExperienceId.IsValid())
 	{
-		ExperienceId = FPrimaryAssetId("GameExperienceDefinition", "BP_DefaultExperience");
+		ExperienceId = FPrimaryAssetId("GameExperienceDefinition", "DA_DefaultExperience");
 	}
 
 	if (const auto AsGameState = GetGameState<ASGameStateBase>())

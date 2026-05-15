@@ -36,7 +36,7 @@ void ASGameStateBase::BeginPlay()
 
 	if (!UKismetSystemLibrary::IsDedicatedServer(this) && BackgroundMusic != nullptr)
 	{
-		// UGameplayStatics::PlaySound2D(this, BackgroundMusic);
+		UGameplayStatics::PlaySound2D(this, BackgroundMusic);
 	}
 
 	LoadSaveData();
