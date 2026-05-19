@@ -6,6 +6,13 @@
 #include "Shooter.h"
 #include "ShooterSaveData.h"
 #include "SPlayerController.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "Net/UnrealNetwork.h"
+
+namespace Shooter::Tags
+{
+	UE_DEFINE_GAMEPLAY_TAG(PlayerStateReadyMessage, TEXT("GameplayMessage.PlayerStateReady"));
+}
 
 void ASPlayerState::BeginPlay()
 {
@@ -23,6 +30,20 @@ void ASPlayerState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	SaveData();
 }
 
+void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, PlayerDisplayName)
+}
+
+void ASPlayerState::OnRep_PlayerId()
+{
+	Super::OnRep_PlayerId();
+
+	BroadcastPlayerStateReady();
+}
+
 FText ASPlayerState::GetPlayerName_Text() const
 {
 	if (PlayerSaveData)
@@ -30,7 +51,7 @@ FText ASPlayerState::GetPlayerName_Text() const
 		return PlayerSaveData->PlayerName;
 	}
 
-	return FText::GetEmpty();
+	return PlayerDisplayName;
 }
 
 void ASPlayerState::SetPlayerName_Text(const FText InPlayerName)
@@ -43,8 +64,33 @@ void ASPlayerState::SetPlayerName_Text(const FText InPlayerName)
 			SaveData();
 		}
 
-		OwningPlayer->ServerChangeName(PlayerSaveData->PlayerName.ToString());
+		PlayerDisplayName = InPlayerName;
+		SetPlayerDisplayName(InPlayerName);
 	}
+}
+
+void ASPlayerState::BroadcastPlayerStateReady()
+{
+	if (const UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().SetTimerForNextTick([this]
+		{
+			FSPlayerStateReadyMessage Message;
+			Message.PlayerState = this;
+			UGameplayMessageSubsystem::Get(this).BroadcastMessage(Shooter::Tags::PlayerStateReadyMessage, Message);
+		});
+	}
+}
+
+void ASPlayerState::ChangeScore(const int32 Value)
+{
+	SetScore(GetScore() + Value);
+}
+
+void ASPlayerState::SetPlayerDisplayName_Implementation(const FText& InDisplayName)
+{
+	PlayerDisplayName = InDisplayName;
+	OwningPlayer->ServerChangeName(InDisplayName.ToString());
 }
 
 void ASPlayerState::LoadSaveData()
@@ -54,7 +100,7 @@ void ASPlayerState::LoadSaveData()
 		PlayerSaveData = Cast<USPlayerSaveData>(ULocalPlayerSaveGame::LoadOrCreateSaveGameForLocalPlayer(
 			USPlayerSaveData::StaticClass(), OwningPlayer->GetLocalPlayer(), Shooter::SaveGame::Slot_Player));
 		check(PlayerSaveData != nullptr);
-		OwningPlayer->ServerChangeName(PlayerSaveData->PlayerName.ToString());
+		SetPlayerDisplayName(PlayerSaveData->PlayerName);
 	}
 }
 

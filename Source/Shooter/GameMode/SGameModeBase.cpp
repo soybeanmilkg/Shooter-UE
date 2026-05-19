@@ -26,6 +26,35 @@ void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FS
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ASGameModeBase::HandleExperience);
 }
 
+void ASGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if (const auto AsGameState = GetGameState<ASGameStateBase>())
+	{
+		AsGameState->AddPlayerId(NewPlayer->PlayerState->GetPlayerId());
+	}
+
+	if (const auto PS = Cast<ASPlayerState>(NewPlayer->PlayerState))
+	{
+		PS->BroadcastPlayerStateReady();
+	}
+}
+
+void ASGameModeBase::Logout(AController* Exiting)
+{
+	const auto PlayerController = Cast<APlayerController>(Exiting);
+	if (PlayerController && PlayerController->PlayerState)
+	{
+		if (const auto AsGameState = GetGameState<ASGameStateBase>())
+		{
+			AsGameState->RemovePlayerId(PlayerController->PlayerState->GetPlayerId());
+		}
+	}
+
+	Super::Logout(Exiting);
+}
+
 void ASGameModeBase::HandleExperience() const
 {
 	FPrimaryAssetId ExperienceId;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ModularGameStateBase.h"
+#include "ModularGameState.h"
 #include "ShooterSaveData.h"
 #include "SGameStateBase.generated.h"
 
@@ -11,11 +11,14 @@ class UGameMainAsset;
 class UGameExperienceManagerComponent;
 class ASPlayerController;
 class USServerSaveData;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerIdsChangedDelegate);
+
 /**
  * 
  */
 UCLASS()
-class SHOOTER_API ASGameStateBase : public AModularGameStateBase
+class SHOOTER_API ASGameStateBase : public AModularGameState
 {
 	GENERATED_BODY()
 
@@ -33,7 +36,7 @@ protected:
 	//~ End UObject
 
 public:
-	// 获取分数信息，已排序
+	// 获取排行榜分数信息，已排序
 	UFUNCTION(BlueprintPure, Category="Shooter")
 	TArray<FSPlayerScoreInfo> GetScoreInfos() const;
 
@@ -42,6 +45,15 @@ public:
 	void RecordScoreInfo(ASPlayerController* PlayerController);
 
 	UGameExperienceManagerComponent* GetExperienceManager() const { return ExperienceManager; }
+
+	void AddPlayerId(const int32 PlayerId);
+	void RemovePlayerId(const int32 PlayerId);
+
+	UFUNCTION(BlueprintCallable, Category="Shooter")
+	TArray<int32> GetPlayerIds() const { return PlayerIds; }
+
+	UFUNCTION(BlueprintCallable, Category="Shooter", meta=(WorldContext="WorldContextObject"))
+	static APlayerState* GetPlayerStateByPlayerId(UObject* WorldContextObject, const int32 PlayerId);
 
 protected:
 	UPROPERTY(Transient)
@@ -55,10 +67,18 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<USServerSaveData> ServerSaveData { nullptr };
 
-	// 分数信息
+	// 排行榜分数信息
 	UPROPERTY(Replicated)
 	TArray<FSPlayerScoreInfo> ScoreInfos {};
 
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerIds)
+	TArray<int32> PlayerIds {};
+
+	UFUNCTION()
+	void OnRep_PlayerIds();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerIdsChangedDelegate OnPlayerIdsChanged {};
 
 	void LoadSaveData();
 	void SaveData();

@@ -13,6 +13,7 @@ public class Shooter : ModuleRules
 		PublicDependencyModuleNames.AddRange([
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			"Slate", "SlateCore", "UMG", "CommonUI",
+			"GameplayTags",
 			"OnlineSubsystem",
 			"Paper2D",
 			"ModularGameplayActors",

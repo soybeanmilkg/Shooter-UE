@@ -9,9 +9,15 @@
 #include "Shooter.h"
 #include "SPawnMovementComponent.h"
 #include "Components/BoxComponent.h"
-#include "GameFramework/PlayerState.h"
+#include "Engine/DamageEvents.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+
+namespace Shooter::Tags
+{
+	UE_DEFINE_GAMEPLAY_TAG(PawnDieMessage, TEXT("GameplayMessage.PawnDie"))
+}
 
 ASPawn::ASPawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -89,13 +95,12 @@ float ASPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	{
 		OnDie();
 
-		if (EventInstigator != nullptr)
-		{
-			if (const auto State = EventInstigator->GetPlayerState<APlayerState>())
-			{
-				State->SetScore(State->GetScore() + 1);
-			}
-		}
+		FSPawnDieMessage Message {};
+		Message.DamageEvent = DamageEvent;
+		Message.Instigator = EventInstigator;
+		Message.Causer = DamageCauser;
+		Message.DeathPawn = this;
+		UGameplayMessageSubsystem::Get(this).BroadcastMessage(Shooter::Tags::PawnDieMessage, Message);
 	}
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -179,6 +184,14 @@ void ASPawn::OnDie_Implementation()
 	{
 		UGameplayStatics::PlaySound2D(this, DestroySound);
 	}
+
+	if (!HasAuthority())
+	{
+		// 客户端接受到的死亡消息取消一些信息
+		FSPawnDieMessage Message {};
+		Message.DeathPawn = this;
+		UGameplayMessageSubsystem::Get(this).BroadcastMessage(Shooter::Tags::PawnDieMessage, Message);
+	}
 }
 
 void ASPawn::OnRep_Health(const float OldHealth)
@@ -192,8 +205,9 @@ void ASPawn::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	ASPawn* AsPawn = Cast<ASPawn>(OtherActor);
 	if (AsPawn != nullptr && AsPawn->IsA(EnemyClass) && IsAlive() && AsPawn->IsAlive())
 	{
-		OnDie();
-		AsPawn->OnDie();
+		constexpr float HitDamage = 100.f;
+		UGameplayStatics::ApplyDamage(this, HitDamage, AsPawn->GetController(), AsPawn, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(AsPawn, HitDamage, GetController(), this, UDamageType::StaticClass());
 	}
 }
 

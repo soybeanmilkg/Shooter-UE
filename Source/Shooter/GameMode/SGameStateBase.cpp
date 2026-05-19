@@ -54,6 +54,7 @@ void ASGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, ScoreInfos)
+	DOREPLIFETIME(ThisClass, PlayerIds)
 }
 
 TArray<FSPlayerScoreInfo> ASGameStateBase::GetScoreInfos() const
@@ -101,6 +102,39 @@ void ASGameStateBase::RecordScoreInfo(ASPlayerController* PlayerController)
 
 		SaveData();
 	}
+}
+
+void ASGameStateBase::AddPlayerId(const int32 PlayerId) 
+{
+	PlayerIds.AddUnique(PlayerId);
+	OnPlayerIdsChanged.Broadcast();
+}
+
+void ASGameStateBase::RemovePlayerId(const int32 PlayerId) 
+{
+	PlayerIds.Remove(PlayerId);
+	OnPlayerIdsChanged.Broadcast();
+}
+
+APlayerState* ASGameStateBase::GetPlayerStateByPlayerId(UObject* WorldContextObject, const int32 PlayerId)
+{
+	if (AGameStateBase* GameState = UGameplayStatics::GetGameState(WorldContextObject))
+	{
+		for (auto& PlayerState : GameState->PlayerArray)
+		{
+			if (PlayerState->GetPlayerId() == PlayerId)
+			{
+				return PlayerState;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+void ASGameStateBase::OnRep_PlayerIds()
+{
+	OnPlayerIdsChanged.Broadcast();
 }
 
 void ASGameStateBase::LoadSaveData()

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ModularGameModeBase.h"
+#include "ModularGameMode.h"
 #include "SGameModeBase.generated.h"
 
 class UGameExperienceDefinition;
@@ -12,7 +12,7 @@ class UGameExperienceDefinition;
  * 
  */
 UCLASS()
-class SHOOTER_API ASGameModeBase : public AModularGameModeBase
+class SHOOTER_API ASGameModeBase : public AModularGameMode
 {
 	GENERATED_BODY()
 
@@ -22,6 +22,8 @@ public:
 protected:
 	//~ Begin AGameModeBase
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void Logout(AController* Exiting) override;
 	//~ End GameModeBase
 
 private:

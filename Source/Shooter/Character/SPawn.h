@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
+#include "NativeGameplayTags.h"
+#include "Engine/DamageEvents.h"
 #include "SPawn.generated.h"
 
 class USPawnMovementComponent;
@@ -15,6 +17,28 @@ class ASBullet;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedDelegate, float, Health, float, OldHealth);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeadDelegate);
+
+USTRUCT(BlueprintType)
+struct FSPawnDieMessage
+{
+	GENERATED_BODY()
+
+	FDamageEvent DamageEvent {};
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AController> Instigator { nullptr };
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AActor> Causer { nullptr };
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<class ASPawn> DeathPawn { nullptr };
+};
+
+namespace Shooter::Tags
+{
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(PawnDieMessage);
+}
 
 UCLASS(Abstract)
 class SHOOTER_API ASPawn : public AModularPawn
