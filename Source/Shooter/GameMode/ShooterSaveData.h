@@ -18,7 +18,7 @@ struct FSPlayerScoreInfo
 	GENERATED_BODY()
 
 	UPROPERTY(SaveGame, BlueprintReadWrite)
-	FText PlayerName {};
+	FString PlayerName {};
 
 	UPROPERTY(SaveGame, BlueprintReadWrite)
 	float Score { 0 };
@@ -35,17 +35,4 @@ class SHOOTER_API USServerSaveData : public USaveGame
 public:
 	UPROPERTY(SaveGame)
 	TArray<FSPlayerScoreInfo> ScoreInfos {};
-};
-
-/**
- * 本地玩家存档
- */
-UCLASS()
-class SHOOTER_API USPlayerSaveData : public ULocalPlayerSaveGame
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(SaveGame)
-	FText PlayerName { FText::FromString("Shooter") };
 };

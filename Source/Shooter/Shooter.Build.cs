@@ -13,12 +13,16 @@ public class Shooter : ModuleRules
 		PublicDependencyModuleNames.AddRange([
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			"Slate", "SlateCore", "UMG", "CommonUI",
+
+			"ModularGameplay", "ModularGameplayActors",
+			"CommonGame", "CommonUser", "CommonLoadingScreen",
+			"GameplayMessageRuntime", "GameSettings", "GameExperience",
+
 			"GameplayTags",
 			"OnlineSubsystem",
 			"Paper2D",
-			"ModularGameplayActors",
-			"CommonGame", "CommonUser", "CommonLoadingScreen",
-			"GameplayMessageRuntime", "GameSettings", "GameExperience",
+			"ControlFlows",
+			"PropertyPath",
 		]);
 	}
 }

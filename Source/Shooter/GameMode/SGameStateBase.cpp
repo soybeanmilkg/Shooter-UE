@@ -17,7 +17,7 @@ struct FSScoreInfoComparer
 		if (FMath::IsNearlyEqual(A.Score, B.Score))
 		{
 			// 分数相同时，按名字字母顺序升序排列
-			return A.PlayerName.ToString() < B.PlayerName.ToString();
+			return A.PlayerName < B.PlayerName;
 		}
 
 		return A.Score < B.Score;
@@ -89,7 +89,7 @@ void ASGameStateBase::RecordScoreInfo(ASPlayerController* PlayerController)
 
 	if (const auto PlayerState = PlayerController->GetPlayerState<ASPlayerState>())
 	{
-		const FSPlayerScoreInfo NewScoreInfo { PlayerState->GetPlayerName_Text(), PlayerState->GetScore() };
+		const FSPlayerScoreInfo NewScoreInfo { PlayerState->GetPlayerName(), PlayerState->GetScore() };
 		constexpr FSScoreInfoComparer Comparer {};
 		ScoreInfos.HeapPush(NewScoreInfo, Comparer);
 
@@ -104,13 +104,13 @@ void ASGameStateBase::RecordScoreInfo(ASPlayerController* PlayerController)
 	}
 }
 
-void ASGameStateBase::AddPlayerId(const int32 PlayerId) 
+void ASGameStateBase::AddPlayerId(const int32 PlayerId)
 {
 	PlayerIds.AddUnique(PlayerId);
 	OnPlayerIdsChanged.Broadcast();
 }
 
-void ASGameStateBase::RemovePlayerId(const int32 PlayerId) 
+void ASGameStateBase::RemovePlayerId(const int32 PlayerId)
 {
 	PlayerIds.Remove(PlayerId);
 	OnPlayerIdsChanged.Broadcast();

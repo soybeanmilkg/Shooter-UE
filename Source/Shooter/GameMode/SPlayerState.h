@@ -47,12 +47,6 @@ protected:
 	//~ End PlayerState
 
 public:
-	UFUNCTION(BlueprintPure, BlueprintCosmetic, Category="Shooter", DisplayName="Get Player Name (Text)")
-	FText GetPlayerName_Text() const;
-
-	UFUNCTION(BlueprintCallable, Category="Shooter", DisplayName="Set Player Name (Text)")
-	void SetPlayerName_Text(const FText InPlayerName);
-
 	void BroadcastPlayerStateReady();
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Shooter")
@@ -62,15 +56,6 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<ASPlayerController> OwningPlayer { nullptr };
 
-	UPROPERTY(Transient)
-	TObjectPtr<USPlayerSaveData> PlayerSaveData { nullptr };
-
 	UPROPERTY(Replicated)
 	FText PlayerDisplayName {};
-
-	UFUNCTION(Server, Reliable)
-	void SetPlayerDisplayName(const FText& InDisplayName);
-
-	void LoadSaveData();
-	void SaveData();
 };

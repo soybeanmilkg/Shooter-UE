@@ -19,6 +19,18 @@
 			]
 		},
 		{
+			"Name": "UIExtension",
+			"Enabled": true
+		},
+		{
+			"Name": "GameExperience",
+			"Enabled": true
+		},
+		{
+			"Name": "GameFeatureExtension",
+			"Enabled": true
+		},
+		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
 		},
@@ -47,15 +59,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "UIExtension",
-			"Enabled": true
-		},
-		{
-			"Name": "GameExperience",
-			"Enabled": true
-		},
-		{
-			"Name": "GameFeatureExtension",
+			"Name": "ControlFlows",
 			"Enabled": true
 		}
 	]
