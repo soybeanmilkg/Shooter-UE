@@ -15,7 +15,7 @@ public class Shooter : ModuleRules
 			"Slate", "SlateCore", "UMG", "CommonUI",
 
 			"ModularGameplay", "ModularGameplayActors",
-			"CommonGame", "CommonUser", "CommonLoadingScreen",
+			"CommonGame", "CommonUser", "CommonLoadingScreen", "CommonPools",
 			"GameplayMessageRuntime", "GameSettings", "GameExperience",
 
 			"GameplayTags",
