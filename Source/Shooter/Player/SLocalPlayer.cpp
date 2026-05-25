@@ -3,6 +3,7 @@
 
 #include "SLocalPlayer.h"
 
+#include "SGameUserSettings.h"
 #include "SPlayerSaveData.h"
 
 USPlayerSaveData* USLocalPlayer::GetPlayerSaveData() const
@@ -25,6 +26,11 @@ USPlayerSaveData* USLocalPlayer::GetPlayerSaveData() const
 	}
 
 	return PlayerSaveData;
+}
+
+USGameUserSettings* USLocalPlayer::GetGameUserSettings() const
+{
+	return USGameUserSettings::Get();
 }
 
 void USLocalPlayer::LoadPlayerSaveData(const bool bForceLoad)

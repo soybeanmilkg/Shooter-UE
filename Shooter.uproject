@@ -19,6 +19,18 @@
 			]
 		},
 		{
+			"Name": "AsyncMixin",
+			"Enabled": true
+		},
+		{
+			"Name": "GameSubtitles",
+			"Enabled": true
+		},
+		{
+			"Name": "PocketWorlds",
+			"Enabled": true
+		},
+		{
 			"Name": "UIExtension",
 			"Enabled": true
 		},
@@ -64,6 +76,10 @@
 		},
 		{
 			"Name": "ControlFlows",
+			"Enabled": true
+		},
+		{
+			"Name": "AudioModulation",
 			"Enabled": true
 		}
 	]

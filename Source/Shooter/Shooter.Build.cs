@@ -23,6 +23,8 @@ public class Shooter : ModuleRules
 			"Paper2D",
 			"ControlFlows",
 			"PropertyPath",
+			"DeveloperSettings",
+			"AudioModulation",
 		]);
 	}
 }

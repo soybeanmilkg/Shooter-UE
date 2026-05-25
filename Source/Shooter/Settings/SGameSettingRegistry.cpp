@@ -4,8 +4,10 @@
 #include "SGameSettingRegistry.h"
 
 #include "GameSettingCollection.h"
+#include "GameSettingValueScalarDynamic.h"
 #include "CustomSettings/SGameSettingValue_String.h"
 #include "DataSource/GameSettingDataSourceDynamic.h"
+#include "Player/SGameUserSettings.h"
 #include "Player/SLocalPlayer.h"
 #include "Player/SPlayerSaveData.h"
 
@@ -15,35 +17,91 @@ void USGameSettingRegistry::OnInitialize(ULocalPlayer* InLocalPlayer)
 {
 	USLocalPlayer* LocalPlayer = Cast<USLocalPlayer>(InLocalPlayer);
 
-	UGameSettingCollection* PlayerInfoSettings = NewObject<UGameSettingCollection>();
-	PlayerInfoSettings->SetDevName("PlayerInfoSettings");
-	PlayerInfoSettings->SetDisplayName(LOCTEXT("玩家信息设置", "玩家信息设置"));
-	PlayerInfoSettings->Initialize(LocalPlayer);
+	UGameSettingCollection* Settings = NewObject<UGameSettingCollection>();
+	Settings->SetDevName("ShooterSettings");
+	Settings->SetDisplayName(LOCTEXT("太空战机设置", "太空战机设置"));
+	Settings->Initialize(LocalPlayer);
 
 	{
-		USGameSettingValue_String* PlayerNameSetting = NewObject<USGameSettingValue_String>();
-		PlayerNameSetting->SetDevName("PlayerName");
-		PlayerNameSetting->SetDisplayName(LOCTEXT("玩家名称", "玩家名称"));
-		PlayerNameSetting->SetDescriptionRichText(LOCTEXT("设置玩家名称", "设置玩家名称。"));
+		USGameSettingValue_String* Setting = NewObject<USGameSettingValue_String>();
+		Setting->SetDevName("PlayerName");
+		Setting->SetDisplayName(LOCTEXT("玩家名称", "玩家名称"));
+		Setting->SetDescriptionRichText(LOCTEXT("设置玩家名称", "设置玩家名称。"));
 
-		PlayerNameSetting->SetDynamicGetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(GetPlayerName));
-		PlayerNameSetting->SetDynamicSetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(SetPlayerName));
-		PlayerNameSetting->SetDefaultValue(TEXT("Shooter"));
+		Setting->SetDynamicGetter(GET_SAVE_DATA_SETTINGS_FUNCTION_PATH(GetPlayerName));
+		Setting->SetDynamicSetter(GET_SAVE_DATA_SETTINGS_FUNCTION_PATH(SetPlayerName));
+		Setting->SetDefaultValue(TEXT("Shooter"));
 
-		PlayerInfoSettings->AddSetting(PlayerNameSetting);
+		Settings->AddSetting(Setting);
 	}
 
-	RegisterSetting(PlayerInfoSettings);
+	{
+		UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
+		Setting->SetDevName("OverallVolume");
+		Setting->SetDisplayName(LOCTEXT("音量", "音量"));
+		Setting->SetDescriptionRichText(LOCTEXT("设置音量", "设置音量。"));
+
+		Setting->SetDynamicGetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(GetOverallVolume));
+		Setting->SetDynamicSetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(SetOverallVolume));
+		Setting->SetDefaultValue(GetDefault<USGameUserSettings>()->GetOverallVolume());
+		Setting->SetDisplayFormat(UGameSettingValueScalarDynamic::ZeroToOnePercent);
+
+		Settings->AddSetting(Setting);
+	}
+
+	{
+		UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
+		Setting->SetDevName("MusicVolume");
+		Setting->SetDisplayName(LOCTEXT("音乐音量", "音乐音量"));
+		Setting->SetDescriptionRichText(LOCTEXT("设置音乐音量", "设置音乐音量。"));
+
+		Setting->SetDynamicGetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(GetMusicVolume));
+		Setting->SetDynamicSetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(SetMusicVolume));
+		Setting->SetDefaultValue(GetDefault<USGameUserSettings>()->GetMusicVolume());
+		Setting->SetDisplayFormat(UGameSettingValueScalarDynamic::ZeroToOnePercent);
+
+		Settings->AddSetting(Setting);
+	}
+
+	{
+		UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
+		Setting->SetDevName("SFXVolume");
+		Setting->SetDisplayName(LOCTEXT("音效音量", "音效音量"));
+		Setting->SetDescriptionRichText(LOCTEXT("设置音效音量", "设置音效音量。"));
+
+		Setting->SetDynamicGetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(GetSFXVolume));
+		Setting->SetDynamicSetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(SetSFXVolume));
+		Setting->SetDefaultValue(GetDefault<USGameUserSettings>()->GetSFXVolume());
+		Setting->SetDisplayFormat(UGameSettingValueScalarDynamic::ZeroToOnePercent);
+
+		Settings->AddSetting(Setting);
+	}
+
+	{
+		UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
+		Setting->SetDevName("UIVolume");
+		Setting->SetDisplayName(LOCTEXT("UI音量", "UI音量"));
+		Setting->SetDescriptionRichText(LOCTEXT("设置UI音量", "设置UI音量。"));
+
+		Setting->SetDynamicGetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(GetUIVolume));
+		Setting->SetDynamicSetter(GET_GAME_USER_SETTINGS_FUNCTION_PATH(SetUIVolume));
+		Setting->SetDefaultValue(GetDefault<USGameUserSettings>()->GetUIVolume());
+		Setting->SetDisplayFormat(UGameSettingValueScalarDynamic::ZeroToOnePercent);
+
+		Settings->AddSetting(Setting);
+	}
+
+	RegisterSetting(Settings);
 }
 
 void USGameSettingRegistry::SaveChanges()
 {
 	Super::SaveChanges();
 
-	if (USLocalPlayer* LocalPlayer = Cast<USLocalPlayer>(OwningLocalPlayer))
+	if (const USLocalPlayer* LocalPlayer = Cast<USLocalPlayer>(OwningLocalPlayer))
 	{
 		// Game user settings need to be applied to handle things like resolution, this saves indirectly
-		// LocalPlayer->GetLocalSettings()->ApplySettings(false);
+		LocalPlayer->GetGameUserSettings()->ApplySettings(false);
 
 		LocalPlayer->GetPlayerSaveData()->SaveData();
 	}

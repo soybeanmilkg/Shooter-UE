@@ -6,10 +6,16 @@
 #include "GameSettingRegistry.h"
 #include "SGameSettingRegistry.generated.h"
 
-#define GET_LOCAL_SETTINGS_FUNCTION_PATH(FunctionOrPropertyName)							\
+#define GET_SAVE_DATA_SETTINGS_FUNCTION_PATH(FunctionOrPropertyName)						\
 	MakeShared<FGameSettingDataSourceDynamic>(TArray<FString>({								\
 		GET_FUNCTION_NAME_STRING_CHECKED(USLocalPlayer, GetPlayerSaveData),					\
 		GET_FUNCTION_NAME_STRING_CHECKED(USPlayerSaveData, FunctionOrPropertyName)			\
+	}))
+
+#define GET_GAME_USER_SETTINGS_FUNCTION_PATH(FunctionOrPropertyName)						\
+	MakeShared<FGameSettingDataSourceDynamic>(TArray<FString>({								\
+		GET_FUNCTION_NAME_STRING_CHECKED(USLocalPlayer, GetGameUserSettings),				\
+		GET_FUNCTION_NAME_STRING_CHECKED(USGameUserSettings, FunctionOrPropertyName)		\
 	}))
 
 /**

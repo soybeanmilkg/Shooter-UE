@@ -6,6 +6,7 @@
 #include "CommonLocalPlayer.h"
 #include "SLocalPlayer.generated.h"
 
+class USGameUserSettings;
 class USPlayerSaveData;
 /**
  * 
@@ -18,6 +19,9 @@ class SHOOTER_API USLocalPlayer : public UCommonLocalPlayer
 public:
 	UFUNCTION()
 	USPlayerSaveData* GetPlayerSaveData() const;
+	
+	UFUNCTION()
+	USGameUserSettings* GetGameUserSettings() const;
 
 	void LoadPlayerSaveData(const bool bForceLoad = false);
 
