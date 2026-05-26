@@ -6,7 +6,6 @@
 #include "AudioModulationStatics.h"
 #include "SoundControlBus.h"
 #include "SoundControlBusMix.h"
-#include "Audio/SAudioSettings.h"
 #include "Audio/SAudioSubsystem.h"
 
 USGameUserSettings* USGameUserSettings::Get()
